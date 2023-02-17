@@ -23,8 +23,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need to create an implementation for a tuple of three integers,
@@ -35,9 +33,27 @@ enum IntoColorError {
 // Also note that correct RGB color values must be integers in the 0..=255 range.
 
 // Tuple implementation
+
+fn get_color(nums: Vec<i16>) -> Result<Color, IntoColorError> {
+    if nums.len() != 3 {
+        return Err(IntoColorError::BadLen);
+    }
+
+    if nums.iter().all(|val| (0..=255).contains(val)) {
+        Ok(Color {
+            red: nums[0] as u8,
+            green: nums[1] as u8,
+            blue: nums[2] as u8,
+        })
+    } else {
+        Err(IntoColorError::IntConversion)
+    }
+}
+
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        get_color(vec![tuple.0, tuple.1, tuple.2])
     }
 }
 
@@ -45,6 +61,7 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        get_color(arr.to_vec())
     }
 }
 
@@ -52,6 +69,7 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        get_color(slice.to_owned().to_vec())
     }
 }
 
